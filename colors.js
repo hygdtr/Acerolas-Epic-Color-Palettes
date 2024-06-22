@@ -1,3 +1,8 @@
+function mod(n, m) {
+    var remain = n % m;
+    return Math.floor(remain >= 0 ? remain : remain + m);
+}
+
 // Acerola's code
 function hslToRgb(h, s, l) {
   h = h % 1;
@@ -28,7 +33,7 @@ function hslToRgb(h, s, l) {
 
 function hsvToRgb(h, s, v) {
   var r, g, b;
-
+  h = mod(h*360, 360)/360
   var i = Math.floor(h * 6);
   var f = h * 6 - i;
   var p = v * (1 - s);
@@ -85,6 +90,7 @@ function generateHSL(HUE_MODE, settings) {
 
   let hueBase = settings.hueBase;
   let hueContrast = Lerp(0.33, 1.0, settings.hueContrast);
+  let hueDirection = settings.hueDirection;
 
   let saturationBase = Lerp(0.01, 0.5, settings.saturationBase);
   let saturationContrast = Lerp(0.1, 1 - saturationBase, settings.saturationContrast);
@@ -109,10 +115,10 @@ function generateHSL(HUE_MODE, settings) {
     let hueOffset = linearIterator * hueContrast;
 
     if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "analagous") hueOffset *= hueDirection*0.25;
+    if (HUE_MODE == "complementary") hueOffset *= hueDirection*0.33;
+    if (HUE_MODE == "triadic complementary") hueOffset *= hueDirection*0.66;
+    if (HUE_MODE == "tetradic complementary") hueOffset *= hueDirection*0.75;
 
     if (HUE_MODE != "monochromatic")
       hueOffset += (Math.random() * 2 - 1) * 0.01;
@@ -134,6 +140,7 @@ function generateHSV(HUE_MODE, settings) {
 
   let hueBase = settings.hueBase;
   let hueContrast = Lerp(0.33, 1.0, settings.hueContrast);
+  let hueDirection = settings.hueDirection;
 
   let saturationBase = Lerp(0.01, 0.5, settings.saturationBase);
   let saturationContrast = Lerp(0.1, 1 - saturationBase, settings.saturationContrast);
@@ -157,10 +164,10 @@ function generateHSV(HUE_MODE, settings) {
     let hueOffset = linearIterator * hueContrast;
 
     if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "analagous") hueOffset *= hueDirection*0.25;
+    if (HUE_MODE == "complementary") hueOffset *= hueDirection*0.33;
+    if (HUE_MODE == "triadic complementary") hueOffset *= hueDirection*0.66;
+    if (HUE_MODE == "tetradic complementary") hueOffset *= hueDirection*0.75;
 
     if (HUE_MODE != "monochromatic")
       hueOffset += (Math.random() * 2 - 1) * 0.01;
@@ -182,6 +189,7 @@ function generateOKLCH(HUE_MODE, settings) {
 
   let hueBase = settings.hueBase * 2 * Math.PI;
   let hueContrast = Lerp(0.33, 1.0, settings.hueContrast);
+  let hueDirection = settings.hueDirection;
 
   let chromaBase = Lerp(0.01, 0.1, settings.saturationBase);
   let chromaContrast = Lerp(0.075, 0.125 - chromaBase, settings.saturationContrast);
@@ -205,10 +213,10 @@ function generateOKLCH(HUE_MODE, settings) {
     let hueOffset = linearIterator * hueContrast * 2 * Math.PI + (Math.PI / 4);
 
     if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "analagous") hueOffset *= hueDirection*0.25;
+    if (HUE_MODE == "complementary") hueOffset *= hueDirection*0.33;
+    if (HUE_MODE == "triadic complementary") hueOffset *= hueDirection*0.66;
+    if (HUE_MODE == "tetradic complementary") hueOffset *= hueDirection*0.75;
 
     if (HUE_MODE != "monochromatic")
       hueOffset += (Math.random() * 2 - 1) * 0.01;
@@ -232,7 +240,7 @@ function generateOKLCH(HUE_MODE, settings) {
   return oklchColors;
 }
 
-function PaletteSettings(COLOR_COUNT) {
+function PaletteSettings(COLOR_COUNT, HUE_DIRECTION) {
   return {
     hueBase: Math.random(),
     hueContrast: Math.random(),
@@ -243,11 +251,12 @@ function PaletteSettings(COLOR_COUNT) {
     fixed: Math.random(),
     saturationConstant: true,
     colorCount: COLOR_COUNT,
+	hueDirection: HUE_DIRECTION,
   }
 }
 
-function generatePalettes(HUE_MODE, COLOR_COUNT) {
-  let paletteSettings = PaletteSettings(COLOR_COUNT);
+function generatePalettes(HUE_MODE, COLOR_COUNT, HUE_DIRECTION) {
+  let paletteSettings = PaletteSettings(COLOR_COUNT, HUE_DIRECTION);
 
   let hsl = generateHSL(HUE_MODE, paletteSettings);
   let hsv = generateHSV(HUE_MODE, paletteSettings);
